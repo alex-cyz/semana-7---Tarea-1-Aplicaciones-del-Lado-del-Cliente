@@ -1,0 +1,132 @@
+<div class="contenedor-servicio">
+  <div class="encabezado">
+    <h1>Gestión de Servicios</h1>
+    <button class="btn-agregar" (click)="abrirFormulario()">+ Agregar Servicio</button>
+  </div>
+
+  <!-- Tabla de servicios -->
+  <div class="tabla-contenedor">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Precio</th>
+          <th>Duración</th>
+          <th>Categoría</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let serv of servicios" class="fila" [class.inactivo]="!serv.activo">
+          <td>{{ serv.id }}</td>
+          <td>{{ serv.nombre }}</td>
+          <td>{{ serv.descripcion }}</td>
+          <td>{{ serv.precio | currency }}</td>
+          <td>{{ serv.duracion }} min</td>
+          <td>{{ serv.categoria }}</td>
+          <td>
+            <button 
+              class="btn-estado" 
+              [class.activo]="serv.activo"
+              [class.inactivo]="!serv.activo"
+              (click)="toggleActivo(serv)">
+              {{ serv.activo ? 'Activo' : 'Inactivo' }}
+            </button>
+          </td>
+          <td>
+            <button class="btn-editar" (click)="editarServicio(serv)">Editar</button>
+            <button class="btn-eliminar" (click)="eliminarServicio(serv.id)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="servicios.length === 0" class="sin-datos">
+      No hay servicios registrados
+    </div>
+  </div>
+
+  <!-- Modal de formulario -->
+  <div *ngIf="mostrarFormulario" class="modal-overlay">
+    <div class="modal-contenido">
+      <div class="modal-encabezado">
+        <h2>{{ editando ? 'Editar Servicio' : 'Nuevo Servicio' }}</h2>
+        <button class="btn-cerrar" (click)="cerrarFormulario()">✕</button>
+      </div>
+
+      <form class="formulario" (ngSubmit)="guardarServicio()">
+        <div class="grupo-formulario">
+          <label for="nombre">Nombre del Servicio:</label>
+          <input 
+            type="text" 
+            id="nombre" 
+            [(ngModel)]="nuevoServicio.nombre"
+            name="nombre"
+            placeholder="Ej: Corte de cabello"
+          />
+        </div>
+
+        <div class="grupo-formulario">
+          <label for="descripcion">Descripción:</label>
+          <textarea 
+            id="descripcion" 
+            [(ngModel)]="nuevoServicio.descripcion"
+            name="descripcion"
+            placeholder="Describe el servicio"
+            rows="3"></textarea>
+        </div>
+
+        <div class="grupo-formulario">
+          <label for="precio">Precio ($):</label>
+          <input 
+            type="number" 
+            id="precio" 
+            [(ngModel)]="nuevoServicio.precio"
+            name="precio"
+            placeholder="0.00"
+            step="0.01"
+          />
+        </div>
+
+        <div class="grupo-formulario">
+          <label for="duracion">Duración (minutos):</label>
+          <input 
+            type="number" 
+            id="duracion" 
+            [(ngModel)]="nuevoServicio.duracion"
+            name="duracion"
+            placeholder="30"
+          />
+        </div>
+
+        <div class="grupo-formulario">
+          <label for="categoria">Categoría:</label>
+          <select 
+            id="categoria" 
+            [(ngModel)]="nuevoServicio.categoria"
+            name="categoria">
+            <option *ngFor="let cat of categorias" [value]="cat">{{ cat }}</option>
+          </select>
+        </div>
+
+        <div class="grupo-formulario checkbox">
+          <label>
+            <input 
+              type="checkbox" 
+              [(ngModel)]="nuevoServicio.activo"
+              name="activo"
+            />
+            Servicio Activo
+          </label>
+        </div>
+
+        <div class="botones-formulario">
+          <button type="submit" class="btn-guardar">Guardar</button>
+          <button type="button" class="btn-cancelar" (click)="cerrarFormulario()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

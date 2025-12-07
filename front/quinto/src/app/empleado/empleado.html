@@ -1,1 +1,124 @@
-<p>empleado works!</p>
+<div class="contenedor-empleado">
+  <div class="encabezado">
+    <h1>Gestión de Empleados</h1>
+    <button class="btn-agregar" (click)="abrirFormulario()">+ Agregar Empleado</button>
+  </div>
+
+  <!-- Tabla de empleados -->
+  <div class="tabla-contenedor">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Email</th>
+          <th>Puesto</th>
+          <th>Salario</th>
+          <th>Fecha Ingreso</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let emp of empleados" class="fila">
+          <td>{{ emp.id }}</td>
+          <td>{{ emp.nombre }}</td>
+          <td>{{ emp.apellido }}</td>
+          <td>{{ emp.email }}</td>
+          <td>{{ emp.puesto }}</td>
+          <td>{{ emp.salario | currency }}</td>
+          <td>{{ emp.fechaIngreso | date: 'dd/MM/yyyy' }}</td>
+          <td>
+            <button class="btn-editar" (click)="editarEmpleado(emp)">Editar</button>
+            <button class="btn-eliminar" (click)="eliminarEmpleado(emp.id)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="empleados.length === 0" class="sin-datos">
+      No hay empleados registrados
+    </div>
+  </div>
+
+  <!-- Modal de formulario -->
+  <div *ngIf="mostrarFormulario" class="modal-overlay">
+    <div class="modal-contenido">
+      <div class="modal-encabezado">
+        <h2>{{ editando ? 'Editar Empleado' : 'Nuevo Empleado' }}</h2>
+        <button class="btn-cerrar" (click)="cerrarFormulario()">✕</button>
+      </div>
+
+      <form class="formulario" (ngSubmit)="guardarEmpleado()">
+        <div class="grupo-formulario">
+          <label for="nombre">Nombre:</label>
+          <input 
+            type="text" 
+            id="nombre" 
+            [(ngModel)]="nuevoEmpleado.nombre"
+            name="nombre"
+            placeholder="Ingresa el nombre"
+          />
+        </div>
+
+        <div class="grupo-formulario">
+          <label for="apellido">Apellido:</label>
+          <input 
+            type="text" 
+            id="apellido" 
+            [(ngModel)]="nuevoEmpleado.apellido"
+            name="apellido"
+            placeholder="Ingresa el apellido"
+          />
+        </div>
+
+        <div class="grupo-formulario">
+          <label for="email">Email:</label>
+          <input 
+            type="email" 
+            id="email" 
+            [(ngModel)]="nuevoEmpleado.email"
+            name="email"
+            placeholder="ejemplo@empresa.com"
+          />
+        </div>
+
+        <div class="grupo-formulario">
+          <label for="puesto">Puesto:</label>
+          <input 
+            type="text" 
+            id="puesto" 
+            [(ngModel)]="nuevoEmpleado.puesto"
+            name="puesto"
+            placeholder="Ingresa el puesto"
+          />
+        </div>
+
+        <div class="grupo-formulario">
+          <label for="salario">Salario:</label>
+          <input 
+            type="number" 
+            id="salario" 
+            [(ngModel)]="nuevoEmpleado.salario"
+            name="salario"
+            placeholder="Ingresa el salario"
+          />
+        </div>
+
+        <div class="grupo-formulario">
+          <label for="fechaIngreso">Fecha de Ingreso:</label>
+          <input 
+            type="date" 
+            id="fechaIngreso" 
+            [(ngModel)]="nuevoEmpleado.fechaIngreso"
+            name="fechaIngreso"
+          />
+        </div>
+
+        <div class="botones-formulario">
+          <button type="submit" class="btn-guardar">Guardar</button>
+          <button type="button" class="btn-cancelar" (click)="cerrarFormulario()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,4 +1,4 @@
-.contenedor-empleado {
+.contenedor-servicio {
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
@@ -70,6 +70,11 @@
   background-color: #f9f9f9;
 }
 
+.tabla tbody tr.inactivo {
+  opacity: 0.7;
+  background-color: #f0f0f0;
+}
+
 .fila {
   transition: background-color 0.2s;
 }
@@ -83,7 +88,8 @@
 
 /* Botones de tabla */
 .btn-editar,
-.btn-eliminar {
+.btn-eliminar,
+.btn-estado {
   padding: 6px 12px;
   border: none;
   border-radius: 4px;
@@ -110,6 +116,35 @@
 
 .btn-eliminar:hover {
   background-color: #da190b;
+}
+
+.btn-estado {
+  border: 2px solid #999;
+  background-color: transparent;
+  color: #666;
+  padding: 4px 10px;
+}
+
+.btn-estado.activo {
+  border-color: #4caf50;
+  color: #4caf50;
+  background-color: #e8f5e9;
+}
+
+.btn-estado.activo:hover {
+  background-color: #4caf50;
+  color: white;
+}
+
+.btn-estado.inactivo {
+  border-color: #f44336;
+  color: #f44336;
+  background-color: #ffebee;
+}
+
+.btn-estado.inactivo:hover {
+  background-color: #f44336;
+  color: white;
 }
 
 /* Modal */
@@ -192,7 +227,9 @@
   font-size: 14px;
 }
 
-.grupo-formulario input {
+.grupo-formulario input,
+.grupo-formulario select,
+.grupo-formulario textarea {
   width: 100%;
   padding: 10px;
   border: 1px solid #ddd;
@@ -203,10 +240,33 @@
   transition: border-color 0.3s;
 }
 
-.grupo-formulario input:focus {
+.grupo-formulario input:focus,
+.grupo-formulario select:focus,
+.grupo-formulario textarea:focus {
   outline: none;
   border-color: #2196f3;
   box-shadow: 0 0 5px rgba(33, 150, 243, 0.3);
+}
+
+.grupo-formulario textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.grupo-formulario.checkbox {
+  margin-top: 20px;
+}
+
+.grupo-formulario.checkbox label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
+}
+
+.grupo-formulario.checkbox input {
+  width: auto;
+  margin-right: 10px;
+  cursor: pointer;
 }
 
 /* Botones del formulario */
@@ -250,7 +310,7 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-  .contenedor-empleado {
+  .contenedor-servicio {
     padding: 15px;
   }
 
@@ -273,7 +333,8 @@
   }
 
   .btn-editar,
-  .btn-eliminar {
+  .btn-eliminar,
+  .btn-estado {
     padding: 4px 8px;
     font-size: 11px;
   }
