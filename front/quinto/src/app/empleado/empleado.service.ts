@@ -26,8 +26,15 @@ export class EmpleadoService {
 
   private cargarEmpleados(): void {
     this.http.get<Empleado[]>(this.apiUrl).subscribe({
-      next: (data) => this.empleados$.next(data),
-      error: (error) => console.error('Error cargando empleados', error)
+      next: (data) => {
+        console.log('Empleados cargados:', data);
+        this.empleados$.next(data);
+      },
+      error: (error) => {
+        console.error('Error cargando empleados:', error);
+        console.error('Status:', error.status);
+        console.error('Message:', error.message);
+      }
     });
   }
 
