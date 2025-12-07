@@ -52,11 +52,24 @@ export class ServicioComponent implements OnInit {
   guardarServicio(): void {
     if (this.validarFormulario()) {
       if (this.editando && this.servicioEditando?.id) {
-        this.servicioService.actualizarServicio(this.servicioEditando.id, this.nuevoServicio);
+        this.servicioService.actualizarServicio(this.servicioEditando.id, this.nuevoServicio)
+          .subscribe({
+            next: () => {
+              alert('Servicio actualizado correctamente');
+              this.cerrarFormulario();
+            },
+            error: (error) => alert('Error: ' + error.message)
+          });
       } else {
-        this.servicioService.agregarServicio(this.nuevoServicio);
+        this.servicioService.agregarServicio(this.nuevoServicio)
+          .subscribe({
+            next: () => {
+              alert('Servicio agregado correctamente');
+              this.cerrarFormulario();
+            },
+            error: (error) => alert('Error: ' + error.message)
+          });
       }
-      this.cerrarFormulario();
     }
   }
 
@@ -69,7 +82,11 @@ export class ServicioComponent implements OnInit {
 
   eliminarServicio(id: number | undefined): void {
     if (id && confirm('¿Estás seguro de que deseas eliminar este servicio?')) {
-      this.servicioService.eliminarServicio(id);
+      this.servicioService.eliminarServicio(id)
+        .subscribe({
+          next: () => alert('Servicio eliminado'),
+          error: (error) => alert('Error: ' + error.message)
+        });
     }
   }
 

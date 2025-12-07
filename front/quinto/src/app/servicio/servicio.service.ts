@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 export interface Servicio {
   id?: number;
   nombre: string;
   descripcion: string;
   precio: number;
-  duracion: number; // en minutos
+  duracion: number;
   categoria: string;
   activo: boolean;
 }
@@ -15,58 +17,39 @@ export interface Servicio {
   providedIn: 'root'
 })
 export class ServicioService {
-  private servicios$ = new BehaviorSubject<Servicio[]>([
-    {
-      id: 1,
-      nombre: 'Corte de cabello',
-      descripcion: 'Corte de cabello profesional con estilo',
-      precio: 25,
-      duracion: 30,
-      categoria: 'Barbería',
-      activo: true
-    },
-    {
-      id: 2,
-      nombre: 'Afeitado',
-      descripcion: 'Afeitado profesional con navaja',
-      precio: 15,
-      duracion: 20,
-      categoria: 'Barbería',
-      activo: true
-    },
-    {
-      id: 3,
-      nombre: 'Tinte',
-      descripcion: 'Tinte profesional de cabello',
-      precio: 40,
-      duracion: 60,
-      categoria: 'Colorimetría',
-      activo: true
-    }
-  ]);
+  private apiUrl = 'http://localhost:5000/api/servicios';
+  private servicios$ = new BehaviorSubject<Servicio[]>([]);
 
-  constructor() {}
+  constructor(private http: HttpClient) {
+    this.cargarServicios();
+  }
+
+  private cargarServicios(): void {
+    this.http.get<Servicio[]>(this.apiUrl).subscribe({
+      next: (data) => this.servicios$.next(data),
+      error: (error) => console.error('Error cargando servicios', error)
+    });
+  }
 
   getServicios(): Observable<Servicio[]> {
     return this.servicios$.asObservable();
   }
 
-  agregarServicio(servicio: Servicio): void {
-    const servicios = this.servicios$.value;
-    const nuevoId = Math.max(...servicios.map(s => s.id || 0), 0) + 1;
-    servicio.id = nuevoId;
-    this.servicios$.next([...servicios, servicio]);
-  }
-
-  actualizarServicio(id: number, servicio: Servicio): void {
-    const servicios = this.servicios$.value.map(s =>
-      s.id === id ? { ...servicio, id } : s
+  agregarServicio(servicio: Servicio): Observable<Servicio> {
+    return this.http.post<Servicio>(this.apiUrl, servicio).pipe(
+      tap(() => this.cargarServicios())
     );
-    this.servicios$.next(servicios);
   }
 
-  eliminarServicio(id: number): void {
-    const servicios = this.servicios$.value.filter(s => s.id !== id);
-    this.servicios$.next(servicios);
+  actualizarServicio(id: number, servicio: Servicio): Observable<Servicio> {
+    return this.http.put<Servicio>(`${this.apiUrl}/${id}`, servicio).pipe(
+      tap(() => this.cargarServicios())
+    );
+  }
+
+  eliminarServicio(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
+      tap(() => this.cargarServicios())
+    );
   }
 }

@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 export interface Empleado {
   id?: number;
@@ -15,58 +17,39 @@ export interface Empleado {
   providedIn: 'root'
 })
 export class EmpleadoService {
-  private empleados$ = new BehaviorSubject<Empleado[]>([
-    {
-      id: 1,
-      nombre: 'Alex',
-      apellido: 'Muñoz',
-      email: 'alex@gmail.com',
-      puesto: 'Desarrollador',
-      salario: 3000,
-      fechaIngreso: '2025-01-15'
-    },
-    {
-      id: 2,
-      nombre: 'María',
-      apellido: 'Sanchez',
-      email: 'maria@gmail.com',
-      puesto: 'Diseñadora',
-      salario: 2800,
-      fechaIngreso: '2025-02-20'
-    },
-    {
-      id: 3,
-      nombre: 'Jose',
-      apellido: 'Shariana',
-      email: 'Jose@gmail.com',
-      puesto: 'Gerente',
-      salario: 4000,
-      fechaIngreso: '2025-06-10'
-    }
-  ]);
+  private apiUrl = 'http://localhost:5000/api/empleados';
+  private empleados$ = new BehaviorSubject<Empleado[]>([]);
 
-  constructor() {}
+  constructor(private http: HttpClient) {
+    this.cargarEmpleados();
+  }
+
+  private cargarEmpleados(): void {
+    this.http.get<Empleado[]>(this.apiUrl).subscribe({
+      next: (data) => this.empleados$.next(data),
+      error: (error) => console.error('Error cargando empleados', error)
+    });
+  }
 
   getEmpleados(): Observable<Empleado[]> {
     return this.empleados$.asObservable();
   }
 
-  agregarEmpleado(empleado: Empleado): void {
-    const empleados = this.empleados$.value;
-    const nuevoId = Math.max(...empleados.map(e => e.id || 0), 0) + 1;
-    empleado.id = nuevoId;
-    this.empleados$.next([...empleados, empleado]);
-  }
-
-  actualizarEmpleado(id: number, empleado: Empleado): void {
-    const empleados = this.empleados$.value.map(e =>
-      e.id === id ? { ...empleado, id } : e
+  agregarEmpleado(empleado: Empleado): Observable<Empleado> {
+    return this.http.post<Empleado>(this.apiUrl, empleado).pipe(
+      tap(() => this.cargarEmpleados())
     );
-    this.empleados$.next(empleados);
   }
 
-  eliminarEmpleado(id: number): void {
-    const empleados = this.empleados$.value.filter(e => e.id !== id);
-    this.empleados$.next(empleados);
+  actualizarEmpleado(id: number, empleado: Empleado): Observable<Empleado> {
+    return this.http.put<Empleado>(`${this.apiUrl}/${id}`, empleado).pipe(
+      tap(() => this.cargarEmpleados())
+    );
+  }
+
+  eliminarEmpleado(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
+      tap(() => this.cargarEmpleados())
+    );
   }
 }

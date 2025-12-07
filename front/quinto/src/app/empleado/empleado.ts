@@ -50,11 +50,24 @@ export class EmpleadoComponent implements OnInit {
   guardarEmpleado(): void {
     if (this.validarFormulario()) {
       if (this.editando && this.empleadoEditando?.id) {
-        this.empleadoService.actualizarEmpleado(this.empleadoEditando.id, this.nuevoEmpleado);
+        this.empleadoService.actualizarEmpleado(this.empleadoEditando.id, this.nuevoEmpleado)
+          .subscribe({
+            next: () => {
+              alert('Empleado actualizado correctamente');
+              this.cerrarFormulario();
+            },
+            error: (error) => alert('Error: ' + error.message)
+          });
       } else {
-        this.empleadoService.agregarEmpleado(this.nuevoEmpleado);
+        this.empleadoService.agregarEmpleado(this.nuevoEmpleado)
+          .subscribe({
+            next: () => {
+              alert('Empleado agregado correctamente');
+              this.cerrarFormulario();
+            },
+            error: (error) => alert('Error: ' + error.message)
+          });
       }
-      this.cerrarFormulario();
     }
   }
 
@@ -67,7 +80,11 @@ export class EmpleadoComponent implements OnInit {
 
   eliminarEmpleado(id: number | undefined): void {
     if (id && confirm('¿Estás seguro de que deseas eliminar este empleado?')) {
-      this.empleadoService.eliminarEmpleado(id);
+      this.empleadoService.eliminarEmpleado(id)
+        .subscribe({
+          next: () => alert('Empleado eliminado'),
+          error: (error) => alert('Error: ' + error.message)
+        });
     }
   }
 
